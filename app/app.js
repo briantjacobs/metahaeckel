@@ -3,7 +3,8 @@ define([
   "jquery",
   "lodash",
   "backbone",
-  "handlebars",  
+  //handlebars should be passed below without breaking
+  "handlebars",
 
   // Plugins.
   "plugins/backbone.layoutmanager"
@@ -38,7 +39,7 @@ function($, _, Backbone) {
         $.ajax({ url: "/" + path, async: false }).then(function(contents) {
           JST[path] = Handlebars.compile(contents);
         });
-      } 
+      }
       
       return JST[path];
     }

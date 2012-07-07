@@ -10,7 +10,7 @@ function(app, Backbone) {
   var Views = {};
 
   Views.Item = Backbone.View.extend({
-    template: "todo/item",
+    template: "subplate/item",
  
     // The DOM events specific to an item.
     events: {
@@ -46,11 +46,11 @@ function(app, Backbone) {
   });
 
   Views.Form = Backbone.View.extend({
-    template: "todo/form"
+    template: "subplate/form"
   });
 
   Views.Stats = Backbone.View.extend({
-    template: "todo/stats"
+    template: "subplate/stats"
   });
 
   return Views;

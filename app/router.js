@@ -3,10 +3,10 @@ define([
   "app",
 
   // Modules.
-  "modules/todo"
+  "modules/subplate"
 ],
 
-function(app, Todo) {
+function(app, Subplate) {
 
   // Defining the application router, you can attach sub routers here.
   var Router = Backbone.Router.extend({
@@ -15,21 +15,21 @@ function(app, Todo) {
     },
 
     index: function() {
-      // Create a new Todo List.
-      var list = new Todo.List();
+      // Create a new Subplate List.
+      var list = new Subplate.List();
 
       // Use the main layout.
       app.useLayout("main").setViews({
         // Attach the root content View to the layout.
-        ".list": new Todo.Views.List({
+        ".list": new Subplate.Views.List({
           collection: list
         }),
-        "form": new Todo.Views.Form({
+        "form": new Subplate.Views.Form({
           collection: list
         }),
 
         // Attach the stats View into the content View.
-        ".stats": new Todo.Views.Stats({
+        ".stats": new Subplate.Views.Stats({
           collection: list
         })
         // Attach the list View into the content View.
