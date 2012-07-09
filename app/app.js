@@ -16,7 +16,8 @@ function($, _, Backbone) {
   // creation.
   var app = {
     // The root path to run the application through.
-    root: "/"
+    root: "/",
+    FTKey: '&key=AIzaSyD_m4f3s5GagfJm9JCW9C9p0JX4-IknhtQ'
   };
 
   // Localize or create a new JavaScript Template object.

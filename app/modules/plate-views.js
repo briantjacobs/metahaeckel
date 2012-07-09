@@ -1,16 +1,13 @@
 define([
-  "app",
-
-  // Libs
-  "backbone"
+  "app"
 ],
 
-function(app, Backbone) {
+function(app) {
   
   var Views = {};
 
   Views.Item = Backbone.View.extend({
-    template: "subplate/item",
+    template: "plate/item",
  
     // The DOM events specific to an item.
     events: {
@@ -23,6 +20,7 @@ function(app, Backbone) {
     },
 
     initialize: function() {
+    
     }
   });
 
@@ -43,14 +41,6 @@ function(app, Backbone) {
         this.render();
       }, this);
     }
-  });
-
-  Views.Form = Backbone.View.extend({
-    template: "subplate/form"
-  });
-
-  Views.Stats = Backbone.View.extend({
-    template: "subplate/stats"
   });
 
   return Views;

@@ -1,32 +1,36 @@
 define([
   "app",
 
-  // Libs
-  "backbone",
-
   // Views
-  "modules/subplate/views"
-
+  "modules/subplate-views"
 ],
 
-function(app, Backbone, Views) {
+function(app, Views) {
 
-  // Create a new module
-  var Subplate = app.module();
-
-  Subplate.Model = Backbone.Model.extend({
-    defaults: {
+  var Subplate = app.module({
+    baseUrl : 'http://ft2json.appspot.com/q?sql=SELECT * FROM 1RY8Tk5Y3KN4_L_0stwsKmuCXf_L4LznrbcFYfoc',
+    buildUrl: function(id){
+         var plateQuery = ' WHERE plate='+id;
+        return Subplate.baseUrl+plateQuery+app.FTKey;
     }
+  });
+  Subplate.Model = Backbone.Model.extend({
   });
 
   Subplate.List = Backbone.Collection.extend({
-    // Reference to this collection's model.
-    model: Subplate.Model,
-    url: 'http://ft2json.appspot.com/q?sql=SELECT * FROM 1RY8Tk5Y3KN4_L_0stwsKmuCXf_L4LznrbcFYfoc&key=AIzaSyD_m4f3s5GagfJm9JCW9C9p0JX4-IknhtQ&jsonCallback=',
-    parse: function(response) {
-        return response.data;
-    }
-  });
+	model: Subplate.Model,
+    initialize: function(options) {
+        options = options || (options = {});
+        this.plate = options.plate;
+        this.species = options.species;
+      },
+	url: function(){
+        return Subplate.buildUrl(this.plate);
+    },
+	parse: function(response) {
+		return response.data;
+	}
+});
 
   // Attach the Views sub-module into this module.
   Subplate.Views = Views;

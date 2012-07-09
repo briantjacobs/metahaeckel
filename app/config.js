@@ -5,14 +5,14 @@ require.config({
 
   paths: {
     // JavaScript folders
-    libs: "../assets/js/libs",
-    plugins: "../assets/js/plugins",
+    libs: "/assets/js/libs",
+    plugins: "/assets/js/plugins",
 
     // Libraries
-    jquery: "../assets/js/libs/jquery",
-    lodash: "../assets/js/libs/lodash",
-    handlebars: "../assets/js/libs/handlebars",
-    backbone: "../assets/js/libs/backbone"
+    jquery: "/assets/js/libs/jquery",
+    lodash: "/assets/js/libs/lodash",
+    handlebars: "/assets/js/libs/handlebars",
+    backbone: "/assets/js/libs/backbone"
   },
 
   shim: {
@@ -22,9 +22,6 @@ require.config({
     },
 
     // Backbone.layoutmanager depends on Backbone.
-    "plugins/backbone.layoutmanager": ["backbone"],
-
-    // Backbone.localstorage depends on Backbone.
-    "plugins/backbone-localstorage": ["backbone"]
+    "plugins/backbone.layoutmanager": ["backbone"]
   }
 });
