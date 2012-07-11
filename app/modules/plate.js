@@ -22,6 +22,7 @@ function(app, Views) {
 
   // Default collection.
   Plate.List = Backbone.Collection.extend({
+    //sort stuff in here! how to control the sort?
     model: Plate.Model,
     url: function(){
         return Plate.buildUrl();

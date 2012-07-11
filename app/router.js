@@ -14,6 +14,7 @@ function(app, Subplate, Plate) {
     routes: {
       "": "index",
       "plate/:id": "showPlate",
+      "plate/:id/": "showPlate",
       "plate/:id/:species": "filterPlate"
       //"plate/:id/:species": "index"
     },
@@ -75,6 +76,8 @@ function(app, Subplate, Plate) {
       list.fetch();
     }
   });
+
+
 
   return Router;
 

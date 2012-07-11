@@ -316,19 +316,15 @@ var requirejs, require, define;
 this['JST'] = this['JST'] || {};
 
 this['JST']['app/templates/layouts/main.html'] = function(data) { return function (obj,_) {
-var __p=[],print=function(){__p.push.apply(__p,arguments);};with(obj||{}){__p.push('<div id="todoapp">\n  <div class="header">\n    <h1>Todos</h1>\n  </div>\n\n  <form></form>\n  <div class="list"></div>\n  <div class="stats"></div>\n</div>\n\n<footer>\n  <p>Created by</p>\n  <a href="http://jgn.me/">J&eacute;r&ocirc;me Gravel-Niquet</a>.\n  <p>Cleanup, edits: <a href="http://addyosmani.com">Addy Osmani</a>.</p>\n  <p>Updates: <a href="http://tbranyen.com">Tim Branyen</a>.</p>\n</footer>\n');}return __p.join('');
+var __p=[],print=function(){__p.push.apply(__p,arguments);};with(obj||{}){__p.push('  <div class="list"></div>\n\n');}return __p.join('');
 }(data, _)};
 
-this['JST']['app/templates/todo/form.html'] = function(data) { return function (obj,_) {
-var __p=[],print=function(){__p.push.apply(__p,arguments);};with(obj||{}){__p.push('<div id="create-todo">\n  <input id="new-todo" placeholder="What needs to be done?" type="text" />\n  <span class="ui-tooltip-top" style="display:none;">Press Enter to save this task</span>\n</div>\n\n<div id="todos">\n  <input class="check mark-all-done" type="checkbox"/>\n  <label for="check-all">Mark all as complete</label>\n</div>\n');}return __p.join('');
+this['JST']['app/templates/plate/item.html'] = function(data) { return function (obj,_) {
+var __p=[],print=function(){__p.push.apply(__p,arguments);};with(obj||{}){__p.push('<div class="subplate">\n{{data.plate_number}} - <br> {{data.name_haeckel}}\n\n</div>\n\n');}return __p.join('');
 }(data, _)};
 
-this['JST']['app/templates/todo/item.html'] = function(data) { return function (obj,_) {
-var __p=[],print=function(){__p.push.apply(__p,arguments);};with(obj||{}){__p.push('<div class="todo">\n{{data.description}}\n</div>\n\n');}return __p.join('');
-}(data, _)};
-
-this['JST']['app/templates/todo/stats.html'] = function(data) { return function (obj,_) {
-var __p=[],print=function(){__p.push.apply(__p,arguments);};with(obj||{}){__p.push('<span class="todo-count">\n  <span class="number">', remaining ,'</span>\n  <span class="word">', remaining == 1 ? 'item' : 'items' ,'</span> left.\n</span>\n\n<span class="todo-clear">\n  <a href="#">\n    Clear <span class="number-done">', done ,'</span>\n    completed <span class="word-done">', done == 1 ? 'item' : 'items' ,'</span>\n  </a>\n</span>\n');}return __p.join('');
+this['JST']['app/templates/subplate/item.html'] = function(data) { return function (obj,_) {
+var __p=[],print=function(){__p.push.apply(__p,arguments);};with(obj||{}){__p.push('<div class="subplate">\n<b>{{data.active}}</b>{{data.plate}} - {{data.species}} - <br> {{data.description}}\n\n</div>\n\n');}return __p.join('');
 }(data, _)};
 
 /*!
@@ -16957,7 +16953,8 @@ define('app',[
   "jquery",
   "lodash",
   "backbone",
-  "handlebars",  
+  //handlebars should be passed below without breaking
+  "handlebars",
 
   // Plugins.
   "plugins/backbone.layoutmanager"
@@ -16969,7 +16966,8 @@ function($, _, Backbone) {
   // creation.
   var app = {
     // The root path to run the application through.
-    root: "/"
+    root: "/",
+    FTKey: '&key=AIzaSyD_m4f3s5GagfJm9JCW9C9p0JX4-IknhtQ'
   };
 
   // Localize or create a new JavaScript Template object.
@@ -16992,7 +16990,7 @@ function($, _, Backbone) {
         $.ajax({ url: "/" + path, async: false }).then(function(contents) {
           JST[path] = Handlebars.compile(contents);
         });
-      } 
+      }
       
       return JST[path];
     }
@@ -17040,19 +17038,142 @@ function($, _, Backbone) {
 
 });
 
-define('modules/todo/views',[
-  "app",
-
-  // Libs
-  "backbone"
+define('modules/subplate-views',[
+  "app"
 ],
 
-function(app, Backbone) {
+function(app) {
   
   var Views = {};
 
   Views.Item = Backbone.View.extend({
-    template: "todo/item",
+    template: "subplate/item",
+ 
+    // The DOM events specific to an item.
+    events: {
+     // "filterSpecies": "highlight"
+    },
+
+    serialize: function() {
+      return {
+        data: this.model.toJSON()
+      };
+    },
+
+    initialize: function() {
+      this.on("filterSpecies", function() {
+        console.log("yeah!!");
+      }, this);
+    }
+
+    
+  });
+
+  Views.List = Backbone.View.extend({
+      render: function(manage) {
+        this.collection.each(function(item) {
+          this.insertView(new Views.Item({
+            model: item
+          }));
+        }, this);
+
+        return manage(this).render();
+      },
+
+      initialize: function() {
+        this.collection.on("reset", function() {
+          this.render();
+        }, this);
+      }
+  });
+
+  Views.FilteredList = Backbone.View.extend({
+
+    render: function(manage) {
+   //   console.log(this.collection.species)
+      var speciesTarget = unescape(this.options.speciesTarget);
+      this.collection.each(function(item) {
+        if (item.get("species") == speciesTarget) {
+          item.set({"active":"active"});
+        }
+        var itemView = new Views.Item({
+             model: item
+         });
+        //render an item
+
+        this.insertView(itemView).render(function(el){
+        });
+      }, this);
+
+      return manage(this).render();
+    },
+
+    initialize: function() {
+      this.collection.on("reset", function() {
+        //render the list
+        this.render(function(el) {
+
+        });
+      }, this);
+    }
+  });
+
+  return Views;
+
+});
+
+define('modules/subplate',[
+  "app",
+
+  // Views
+  "modules/subplate-views"
+],
+
+function(app, Views) {
+
+  var Subplate = app.module({
+    baseUrl : 'http://ft2json.appspot.com/q?sql=SELECT * FROM 1RY8Tk5Y3KN4_L_0stwsKmuCXf_L4LznrbcFYfoc',
+    buildUrl: function(id){
+         var plateQuery = ' WHERE plate='+id;
+        return Subplate.baseUrl+plateQuery+app.FTKey;
+    }
+  });
+  Subplate.Model = Backbone.Model.extend({
+  });
+
+  Subplate.List = Backbone.Collection.extend({
+	model: Subplate.Model,
+    initialize: function(options) {
+        options = options || (options = {});
+        this.plate = options.plate;
+        this.species = options.species;
+      },
+	url: function(){
+        return Subplate.buildUrl(this.plate);
+    },
+	parse: function(response) {
+		return response.data;
+	}
+});
+
+  // Attach the Views sub-module into this module.
+  Subplate.Views = Views;
+
+  // Required, return the module for AMD compliance
+  return Subplate;
+
+});
+
+define('modules/plate-views',[
+  "app"
+],
+
+function(app) {
+  
+  var Views = {};
+
+  Views.Item = Backbone.View.extend({
+    template: "plate/item",
  
     // The DOM events specific to an item.
     events: {
@@ -17065,6 +17186,7 @@ function(app, Backbone) {
     },
 
     initialize: function() {
+    
     }
   });
 
@@ -17087,53 +17209,48 @@ function(app, Backbone) {
     }
   });
 
-  Views.Form = Backbone.View.extend({
-    template: "todo/form"
-  });
-
-  Views.Stats = Backbone.View.extend({
-    template: "todo/stats"
-  });
-
   return Views;
 
 });
 
-define('modules/todo',[
+define('modules/plate',[
   "app",
 
-  // Libs
-  "backbone",
-
-  // Views
-  "modules/todo/views"
-
+  //modules
+  "modules/plate-views"
 ],
 
-function(app, Backbone, Views) {
+function(app, Views) {
 
-  // Create a new module
-  var Todo = app.module();
-
-  Todo.Model = Backbone.Model.extend({
-    defaults: {
+  var Plate = app.module({
+    baseUrl : 'http://ft2json.appspot.com/q?sql=SELECT * FROM 1yJFHa7UaISeEbuc2Yn7huQzSv4PvAB-KdxCdBaE',
+    buildUrl: function(){
+        var plateQuery = ''; //' WHERE plate='+id;
+        return Plate.baseUrl+plateQuery+app.FTKey;
     }
   });
 
-  Todo.List = Backbone.Collection.extend({
-    // Reference to this collection's model.
-    model: Todo.Model,
-    url: 'http://ft2json.appspot.com/q?sql=SELECT * FROM 1RY8Tk5Y3KN4_L_0stwsKmuCXf_L4LznrbcFYfoc&key=AIzaSyD_m4f3s5GagfJm9JCW9C9p0JX4-IknhtQ&jsonCallback=',
+  // Default model.
+  Plate.Model = Backbone.Model.extend({
+  
+  });
+
+  // Default collection.
+  Plate.List = Backbone.Collection.extend({
+    model: Plate.Model,
+    url: function(){
+        return Plate.buildUrl();
+    },
     parse: function(response) {
         return response.data;
     }
   });
 
   // Attach the Views sub-module into this module.
-  Todo.Views = Views;
+  Plate.Views = Views;
 
-  // Required, return the module for AMD compliance
-  return Todo;
+  // Return the module for AMD compliance.
+  return Plate;
 
 });
 
@@ -17142,45 +17259,75 @@ define('router',[
   "app",
 
   // Modules.
-  "modules/todo"
+  "modules/subplate",
+  "modules/plate"
 ],
 
-function(app, Todo) {
-
-  // An example Backbone application contributed by
-  // [Jérôme Gravel-Niquet](http://jgn.me/). This demo uses a simple
-  // [LocalStorage adapter](backbone-localstorage.js)
-  // to persist Backbone models within your browser.
+function(app, Subplate, Plate) {
 
   // Defining the application router, you can attach sub routers here.
   var Router = Backbone.Router.extend({
     routes: {
-      "": "index"
+      "": "index",
+      "plate/:id": "showPlate",
+      "plate/:id/:species": "filterPlate"
+      //"plate/:id/:species": "index"
     },
 
-    index: function() {
-      // Create a new Todo List.
-      var list = new Todo.List();
+    showPlate: function(id) {
+      // Create a new Subplate List.
+      var list = new Subplate.List({plate:id});
 
       // Use the main layout.
       app.useLayout("main").setViews({
         // Attach the root content View to the layout.
-        "form": new Todo.Views.Form({
-          collection: list
-        }),
-
-        // Attach the stats View into the content View.
-        ".stats": new Todo.Views.Stats({
-          collection: list
-        }),
-
-        // Attach the list View into the content View.
-        ".list": new Todo.Views.List({
+        ".list": new Subplate.Views.List({
           collection: list
         })
+        // Attach the list View into the content View.
       }).render();
 
-      // Fetch the data from localStorage
+      // Fetch the data
+      list.fetch();
+    },
+    filterPlate: function(id, species) {
+      // Create a new Subplate List.
+      var list = new Subplate.List({
+        plate: id
+      });
+
+      // Use the main layout.
+      app.useLayout("main").setViews({
+        // Attach the root content View to the layout.
+        ".list": new Subplate.Views.FilteredList({
+          collection: list,
+          speciesTarget: species
+        })
+        // Attach the list View into the content View.
+      }).render();
+
+      // Fetch the data
+      list.fetch({
+        success: function(){
+          list.trigger("filterSpecies");
+        }
+      });
+      
+    },
+
+    index: function() {
+      // Create a new Plate List.
+      var list = new Plate.List();
+      // Use the main layout.
+      app.useLayout("main").setViews({
+        // Attach the root content View to the layout.
+        ".list": new Plate.Views.List({
+          collection: list
+        })
+        // Attach the list View into the content View.
+      }).render();
+
+      // Fetch the data
       list.fetch();
     }
   });
@@ -17257,10 +17404,7 @@ require.config({
     },
 
     // Backbone.layoutmanager depends on Backbone.
-    "plugins/backbone.layoutmanager": ["backbone"],
-
-    // Backbone.localstorage depends on Backbone.
-    "plugins/backbone-localstorage": ["backbone"]
+    "plugins/backbone.layoutmanager": ["backbone"]
   }
 });
 

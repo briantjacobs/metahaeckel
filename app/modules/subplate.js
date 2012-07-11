@@ -14,8 +14,7 @@ function(app, Views) {
         return Subplate.baseUrl+plateQuery+app.FTKey;
     }
   });
-  Subplate.Model = Backbone.Model.extend({
-  });
+  Subplate.Model = Backbone.Model.extend({});
 
   Subplate.List = Backbone.Collection.extend({
 	model: Subplate.Model,
@@ -31,6 +30,7 @@ function(app, Views) {
 		return response.data;
 	}
 });
+
 
   // Attach the Views sub-module into this module.
   Subplate.Views = Views;

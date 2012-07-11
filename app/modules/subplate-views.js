@@ -6,12 +6,19 @@ function(app) {
   
   var Views = {};
 
+//this is overriding a specific post
+    app.bind("post:selected", function(post){
+
+ 
+});
+
   Views.Item = Backbone.View.extend({
     template: "subplate/item",
  
     // The DOM events specific to an item.
     events: {
-     // "filterSpecies": "highlight"
+      "click .subplate a":"postSelected"
+
     },
 
     serialize: function() {
@@ -21,9 +28,27 @@ function(app) {
     },
 
     initialize: function() {
-      this.on("filterSpecies", function() {
-        console.log("yeah!!");
+      this.model.collection.on("change", function() {
+        //render the list
+        this.render(function(el) {
+
+        });
       }, this);
+    },
+    postSelected: function(e) {
+      e.preventDefault();
+      //$(this.el).css({"background-color":"black"});
+      var species = this.model.get("species");
+      this.model.collection.each(function(item) {
+        if (item.get("species") == species) {
+          item.set({"active":"active"});
+        } else {
+          item.unset("active");
+        }
+      });
+      app.router.navigate("/plate/" + this.model.get("plate") + "/" + this.model.get("species"));
+   // this.model.select();
+
     }
 
     
@@ -75,6 +100,7 @@ function(app) {
 
         });
       }, this);
+      
     }
   });
 
