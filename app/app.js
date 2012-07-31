@@ -3,7 +3,8 @@ define([
   "jquery",
   "lodash",
   "backbone",
-  //handlebars should be passed below without breaking
+  //kinetic  andhandlebars should be passed below without breaking  
+  "kinetic",
   "handlebars",
 
   // Plugins.
@@ -11,7 +12,7 @@ define([
 ],
 
 function($, _, Backbone) {
-
+console.log(Kinetic)
   // Provide a global location to place configuration settings and module
   // creation.
   var app = {

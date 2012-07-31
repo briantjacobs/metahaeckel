@@ -37,9 +37,7 @@ function(app, Subplate, Plate) {
     },
     filterPlate: function(id, species) {
       // Create a new Subplate List.
-      var list = new Subplate.List({
-        plate: id
-      });
+      var list = new Subplate.List({plate: id});
 
       // Use the main layout.
       app.useLayout("main").setViews({
@@ -47,7 +45,13 @@ function(app, Subplate, Plate) {
         ".list": new Subplate.Views.FilteredList({
           collection: list,
           speciesTarget: species
+        }),
+
+        ".canvas": new Subplate.Views.Canvas({
+          collection: list,
+          speciesTarget: species
         })
+
         // Attach the list View into the content View.
       }).render();
 
