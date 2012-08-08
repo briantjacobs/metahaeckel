@@ -4,7 +4,6 @@ define([
   "lodash",
   "backbone",
   //kinetic  andhandlebars should be passed below without breaking  
-  "kinetic",
   "handlebars",
 
   // Plugins.
@@ -12,13 +11,17 @@ define([
 ],
 
 function($, _, Backbone) {
-console.log(Kinetic)
   // Provide a global location to place configuration settings and module
   // creation.
   var app = {
     // The root path to run the application through.
     root: "/",
-    FTKey: '&key=AIzaSyD_m4f3s5GagfJm9JCW9C9p0JX4-IknhtQ'
+    FTKey: '&key=AIzaSyD_m4f3s5GagfJm9JCW9C9p0JX4-IknhtQ',
+    normalizeTransform: function(value, minSource, maxSource, minDest, maxDest) {
+      //http://stackoverflow.com/a/1477265/262305
+      x = (((maxDest-minDest)*(value-minSource))/(maxSource-minSource))+minDest;
+      return x;
+    }
   };
 
   // Localize or create a new JavaScript Template object.

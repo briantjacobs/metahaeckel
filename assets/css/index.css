@@ -1,4 +1,10 @@
 @import "h5bp.css";
 @import "todo.css";
 
-.canvas {width: 500px;height: 500px;}
+.imgwrap {position: relative;}
+.canvas {opacity: .8; z-index: 2;position: absolute; width: 575px;height: 786px;}
+
+/* hitcanvas*/
+.imgwrap > canvas {position: absolute;left: 575px;}
+
+.imgwrap img {position:absolute;}

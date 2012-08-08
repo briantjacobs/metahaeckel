@@ -12,7 +12,6 @@ require.config({
     jquery: "../assets/js/libs/jquery",
     lodash: "../assets/js/libs/lodash",
     handlebars: "../assets/js/libs/handlebars",
-    kinetic: "../assets/js/libs/kinetic",
     backbone: "../assets/js/libs/backbone"
   },
 
